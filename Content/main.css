@@ -1,0 +1,38 @@
+﻿.microndas-cabecalho {
+    background: #000;
+    padding: 40px 0;
+    text-align: center;
+    color: green;
+    font-family: 'Orbitron', sans-serif;
+    border: 3px solid #ccc;
+}
+
+.cabecalho-titulo {
+    font-size: 30px;
+    text-align: center;
+}
+
+.contador {
+}
+
+.tit-principal {
+    text-align: center;
+}
+
+.container.border {
+    border: 5px solid #000;
+}
+
+.entrada-data {
+    padding: 30px 0;
+}
+
+.grupoBotoes {
+    margin-bottom: 20px;
+}
+
+.botao-wrapper {
+    margin-bottom: 40px;
+    border: 3px solid #000;
+    background: #ccc;
+}
