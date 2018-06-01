@@ -12,7 +12,9 @@
     <div class="microndas-cabecalho">
         <p class="cabecalho-titulo">Display</p>
         <div class="display">
-            <p class="contador">igor....</p>
+            <p class="contador">Bem Vindo!</p>
+            <ul id="contador-list">
+            </ul>
         </div>
     </div>
 
@@ -20,16 +22,34 @@
         @using (Html.BeginForm("ChangeTime", "HomeController"))
         {
             <div class="form-group">
-                <div class="col-md-4 col-md-offset-2">
-                    @Html.Label("NomeProduto")
-                    @Html.TextBox("NomeProduto", "", new { @class = "form-control" })
+                <div class="col-md-4 ">
+                    <div class="input-group">
+                        @Html.Label("NomeProduto")
+                        @Html.TextBox("NomeProduto", "", new { @class = "form-control" })
+
+                        <span class="input-group-btn">
+                            <button id="produto" class="btn btn-danger" style="margin-top:25px;">Inserir Produto</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="col-md-4">
                     @Html.Label("Programas")
                     @Html.DropDownList("Programs", new SelectList(Model.FuncionalidadesDropDown, "Nome", "Nome", "Selecione um programa"), new { @class = "form-control" })
                 </div>
+                <div class="col-md-4 ">
+                    @Html.Label("Tempo")
+                    @Html.TextBox("Tempo", "", new { @class = "form-control" })
+                </div>
+
 
             </div>
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-4">
+                    @Html.Label("Potencia")
+                    @Html.TextBox("Potencia", "", new { @class = "form-control" })
+                </div>
+            </div>
+
         }
     </div>
     <div class="botao-wrapper col-md-12 ">
@@ -38,16 +58,61 @@
         </div>
         <div class="grupoBotoes col-md-12">
             <div class="col-md-6 col-md-offset-4">
-                <button class="btn btn-primary btn-lg">Assar</button>
-                <button class="btn btn-primary btn-lg">Tempo</button>
-                <button class="btn btn-primary btn-lg">Potencia</button>
+                <button id="assar" class="btn btn-primary btn-lg">Assar</button>
+                <button id="tempo" class="btn btn-primary btn-lg">Tempo</button>
+                <button id="potenciaBTN" class="btn btn-primary btn-lg">Potencia</button>
             </div>
         </div>
         <div class="grupoBotoes col-md-12">
             <div class="col-md-6 col-md-offset-4">
-                <button class="btn btn-primary btn-lg">Novo </button>
-                <button class="btn btn-primary btn-lg">Rapido </button>
+                <button class="btn btn-primary btn-lg" type="button" data-toggle="modal" data-target="#exampleModal">Novo </button>
+                <button id="rapido" class="btn btn-primary btn-lg">Rapido </button>
                 <button class="btn btn-primary btn-lg">Resetar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Nova Programação</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-novo">
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            @Html.Label("Potencia")
+                            @Html.TextBox("NovoPotencia", "", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2">
+                            @Html.Label("Tempo")
+                            @Html.TextBox("NovoTempo", "", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-2">
+                            @Html.Label("String")
+                            @Html.TextBox("cozimentoString", "", new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.Label("Nome")
+                            @Html.TextBox("Nome", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Instrucoes")
+                        @Html.TextBox("Instrucoes", "", new { @class = "form-control" })
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="salvar">Salvar</button>
             </div>
         </div>
     </div>
@@ -56,4 +121,166 @@
 
 <script>
 
+    $(document).ready(() => {
+        $(".btn-primary").attr('disabled', 'disabled');
+        $("#Programs").attr('disabled', 'disabled')
+        $("#Tempo").attr('disabled', 'disabled')
+        $("#Potencia").attr('disabled','disabled')
+        $(".contador").typeTo("Insira um Produto para começarmos");
+    })
+    $('#salvar').on('click', event => {
+        event.preventDefault();
+        let enviar = true
+
+        if ($('#NovoPotencia').val() == "") {
+            alert('Potencia não pode ficar vazio');
+            enviar = false
+        }
+        if ($('#Nome').val() == "") {
+            alert('Nome não pode ficar vazio');
+            enviar = false
+        }
+        if ($('#NovoTempo').val() == "") {
+            alert('Tempo não pode ficar vazio');
+            enviar = false
+        }
+        if ($('#cozimentoString').val() == "") {
+            alert('String não pode ficar vazio');
+            enviar = false
+        }
+        if ($('#Instrucoes').val() == "") {
+            alert('Instrucoes não pode ficar vazio');
+            enviar = false
+        }
+
+        if (enviar == true) {
+            let form = $('#form-novo').serialize();
+            $.post('/Microndas/Novo', form, data => {
+                if (data.ok == true) {
+                    location.reload();
+                } else {
+                    alert('Aconteceu algum coisa não esperada.')
+                }
+            })   
+        }
+        
+    })
+    $("#produto").on('click', event => {
+        event.preventDefault();
+        const NomeProduto = $('[name="NomeProduto"]').val()
+        if (NomeProduto == "") {
+            alert('Produto não pode ficar vazio.');
+        } else {
+            $.post('/Microndas/StringCozida', { "Produto": NomeProduto }, data => {
+                $('.contador .contador-list').html('');
+                $(".contador").typeTo(data.produto);
+                $("input").removeAttr('disabled');
+                $("select").removeAttr('disabled');
+                $(".btn-primary").removeAttr('disabled');
+            })
+        }
+    })
+
+    $('#tempo').on('click', event => {
+        event.preventDefault();
+        const Tempo = $('[name="Tempo"]').val();
+        if (Tempo == "") {
+            alert('Tempo não pode ficar vazio.')
+        } else {
+            $.post('/Microndas/Tempo', { "Tempo": Tempo }, data => {
+                if (data.ok == true) {
+                    alert('Tempo alterado com sucesso.');
+                    $('#Tempo').val('');
+                } else {
+                    alert('Tempo não pode ser alterado');
+                }
+            })
+        }
+
+    })
+
+
+    $('#potenciaBTN').on('click', event => {
+        event.preventDefault();
+        const potencia = $('[name="Potencia"]').val();
+
+        if (potencia == "") {
+            alert('Potencia não pode ficar vazio');
+
+        } else {
+            $.post('/Microndas/Potencia', { "Potencia": potencia }, data => {
+                if (data.ok == true) {
+                    alert('Potencia alterado com sucesso.');
+                    $('#Potencia').val('');
+                } else {
+                    alert('Potencia não pode ser alterado');
+                }
+            })
+        }
+    })
+
+
+    $('#rapido').on('click', event => {
+        event.preventDefault();
+        $.post('/Microndas/InicioRapido', { "iniciar": "ok" }, data => {
+            console.log(data);
+        })
+    })
+
+
+    $('#novo').on('click', event => {
+        event.preventDefault();
+        $.post('/Microndas/Novo', {}, data => {
+            console.log(data);
+        })
+    })
+
+
+    $('#assar').on('click', () => {
+        let Programa = $('#Programs').val();
+        $('#contador-list li').remove();
+        $.post("/Microndas/Programa", { "Programa": Programa }, (data) => {
+            segundos = data.ObjPrograma.Tempo
+            metade = segundos / 2
+            stringCount = cozinharString(data.ObjPrograma.Potencia, data.ObjPrograma.CozimentoString)
+            let stringacozinhar = $(".contador").text()
+            contagem_tempo(stringCount, stringacozinhar,metade)
+        });
+
+       
+    })
+
+    var segundos;
+    var stringCount;
+    var bindColor;
+    var metade;
+    function contagem_tempo(stringCount, stringacozinhar,metade) {
+      
+        segundos = segundos - 1;
+        
+        console.log(metade);
+        console.log(segundos)
+        if (segundos == -1) {
+            segundos = 0;
+
+        }
+        bindColor = segundos < metade ? 'color-yellow' : ''
+        $('#contador-list').append("<li class='" + bindColor + "'>" + stringacozinhar + stringCount + "</li>");
+
+        if (segundos != 0) {
+            timerID = setTimeout("contagem_tempo('" + stringCount + "','" + stringacozinhar + "','" + metade +"')", 1000);
+        } else {
+            $('#contador-list').append("<li class='color-red'>aquecida.</li>");
+        }
+    }
+
+    function cozinharString(potencia, cozimentoString) {
+        var stringCozinhada = ""
+        for (var i = 0; i < potencia; i++)
+        {
+            stringCozinhada = stringCozinhada + cozimentoString;
+        }
+
+        return stringCozinhada
+    }
 </script>

@@ -14,6 +14,40 @@ namespace WebApplication1dsadasd
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                "PegarPrograma",
+                "Microndas/Programa",
+                new {Controller="Home", Action= "ActionIniciarAquecimento" }
+                );
+            routes.MapRoute(
+                "AlterarString",
+                "Microndas/StringCozida",
+                new { Controller = "Home", Action = "ActionInputStringCozimento" }
+                );
+            routes.MapRoute(
+                 "AlterarTempo",
+                 "Microndas/Tempo",
+                  new { Controller = "Home", Action = "ActionAlterarTempo" }
+
+                );
+            routes.MapRoute(
+                "InicioRapido",
+                "Microndas/InicioRapido",
+                new { Controller = "Home" , Action = " ActionInicioRapdio" }
+                );
+
+            routes.MapRoute(
+                    "NovoItem",
+                    "Microndas/Novo",
+                    new { Controller= "Home", Action = "ActionIncluirNovo" }
+                );
+
+            routes.MapRoute(
+                "AlterarPotencia",
+                "Microndas/Potencia",
+                new { Controller = "Home" , Action = "ActionAlterarPotencia" }
+                );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
