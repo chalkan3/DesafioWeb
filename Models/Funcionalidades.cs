@@ -132,10 +132,10 @@ namespace WebApplication1dsadasd.Models
             var functionalidades = new List<Funcionalidades>
             {
                new Funcionalidades(30, 10, "Padrao", "Padrao","."),
-               new Funcionalidades(2,  2 ,"Frango", "Isso é um frango", "F"),
-               new Funcionalidades(3,  3, "Pipica","Isso é uma pipica","P"),
-               new Funcionalidades(4,  4,"Ovo", "Isso é um ovo","O"),
-               new Funcionalidades(5,  5,"marmelada","Isso é marmelada","M")
+               new Funcionalidades(2,  2 ,"Isso é um frango", "Frango", "F"),
+               new Funcionalidades(3,  3, "Isso é uma pipoca","Pipoca","P"),
+               new Funcionalidades(4,  4,"Isso é um ovo", "Ovo","O"),
+               new Funcionalidades(5,  5,"Isso é marmelada","Marmelada","M")
             };
 
             return functionalidades;

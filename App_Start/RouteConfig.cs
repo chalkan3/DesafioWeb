@@ -14,6 +14,11 @@ namespace WebApplication1dsadasd
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                "UploadArquivo",
+                "Microndas/Upload",
+                new { Controller = "Upload", Action= "FileUpload" }
+                );
+            routes.MapRoute(
                 "PegarPrograma",
                 "Microndas/Programa",
                 new {Controller="Home", Action= "ActionIniciarAquecimento" }
@@ -32,7 +37,7 @@ namespace WebApplication1dsadasd
             routes.MapRoute(
                 "InicioRapido",
                 "Microndas/InicioRapido",
-                new { Controller = "Home" , Action = " ActionInicioRapdio" }
+                new { Controller = "Home" , Action = "ActionInicioRapdio" }
                 );
 
             routes.MapRoute(
@@ -45,6 +50,12 @@ namespace WebApplication1dsadasd
                 "AlterarPotencia",
                 "Microndas/Potencia",
                 new { Controller = "Home" , Action = "ActionAlterarPotencia" }
+                );
+
+            routes.MapRoute(
+                "MostrarDetalhe",
+                "Microndas/Detalhe",
+                new { Controller = "Home", Action = "ActionMostrarDetalhes" }
                 );
 
             routes.MapRoute(

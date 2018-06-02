@@ -66,6 +66,16 @@ namespace WebApplication1dsadasd.Controllers
             return Json(new { ok = true });
         }
 
+
+        [HttpPost]
+        public ActionResult ActionMostrarDetalhes(FormCollection formulario)
+        {
+            var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
+            Funcionalidades funcionalidade = Funcionalidades.EscolherPrograma(formulario["Programa"], bancoDeDados);
+
+            return Json(new { objeto = funcionalidade });
+        }
+
         [HttpPost]
         public ActionResult ActionAlterarPotencia(FormCollection formulario)
         {
@@ -124,24 +134,14 @@ namespace WebApplication1dsadasd.Controllers
         }
 
         [HttpPost]
-        public ActionResult ActionInicioRapdio(FormCollection formulario)
+        public ActionResult ActionInicioRapdio()
         {
-            var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
 
-            if (formulario["iniciar"] == "ok")
-            {
-
-                Funcionalidades Padrao = Funcionalidades.Padrao(bancoDeDados);
+           
+                Funcionalidades Padrao = new Funcionalidades(30,8,"Rapido","Rapido",".");
                 return Json(new { Objeto = Padrao, ok = true });
-
-            }
-            else
-            {
-                return Json(new { Objeto = "", ok = false });
-
-            }
-
-
+        
+     
         }
 
         [HttpPost]
@@ -149,8 +149,14 @@ namespace WebApplication1dsadasd.Controllers
         {
             var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
             Funcionalidades Programa = Funcionalidades.EscolherPrograma(formulario["Programa"], bancoDeDados);
+            if (Programa.Nome.ToLower() == formulario["String"].ToLower() ||  Programa.Nome == "Padrao") {
+                return Json(new { ok = true, ObjPrograma = Programa });
+            }
 
-            return Json(new { ObjPrograma = Programa });
+            return Json(new { ok = false, ObjPrograma = "" });
+
+
+
         }
 
 

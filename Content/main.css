@@ -13,9 +13,11 @@
 }
 
 .display ul li{
-    display: inline-block;
-    margin-right:10px;
     list-style-type: none;
+}
+#contador-list li {
+    display: inline-block;
+    margin-right: 10px;
 }
 
 .color-red{
@@ -44,4 +46,23 @@
     margin-bottom: 40px;
     border: 3px solid #000;
     background: #ccc;
+}
+
+
+fileUpload {
+    position: relative; 
+    overflow: hidden; 
+    margin: 10px; 
+}
+.fileUpload input.upload {
+    position: absolute;
+    top: 80px;
+    right: 0;
+    left: 3px;
+    margin-bottom: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
 }

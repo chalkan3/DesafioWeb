@@ -12,9 +12,18 @@
     <div class="microndas-cabecalho">
         <p class="cabecalho-titulo">Display</p>
         <div class="display">
+            <div style="display:none;">
+                <p id="origem"></p>
+                <p id="segundosParados"></p>
+            </div>
+            <div id="opcoes" style="display:none;">
+                <h2>Recomeçar da ultima parada ?</h2>
+                <button data-value="Sim" class="btn btn-danger" onclick="verificarParado(this)">Sim</button>
+                <button data-value="Nao" class="btn btn-warning" onclick="verificarParado(this)">Não</button>
+            </div>
+            <ul id="mostrar-detalhes" />
             <p class="contador">Bem Vindo!</p>
-            <ul id="contador-list">
-            </ul>
+            <ul id="contador-list" />
         </div>
     </div>
 
@@ -31,6 +40,13 @@
                             <button id="produto" class="btn btn-danger" style="margin-top:25px;">Inserir Produto</button>
                         </span>
                     </div>
+                    <br />
+                    <div class="fileUpload btn btn-primary">
+                        <span>Para enviar um arquivo clique aqui</span>
+                        <input id="arquivo " type="file" name="file"  class="upload form-control" accept=".txt" />
+                        
+                    </div>
+
                 </div>
                 <div class="col-md-4">
                     @Html.Label("Programas")
@@ -49,8 +65,10 @@
                     @Html.TextBox("Potencia", "", new { @class = "form-control" })
                 </div>
             </div>
+      
 
         }
+        
     </div>
     <div class="botao-wrapper col-md-12 ">
         <div class="col-md-4 col-md-offset-4">
@@ -67,7 +85,7 @@
             <div class="col-md-6 col-md-offset-4">
                 <button class="btn btn-primary btn-lg" type="button" data-toggle="modal" data-target="#exampleModal">Novo </button>
                 <button id="rapido" class="btn btn-primary btn-lg">Rapido </button>
-                <button class="btn btn-primary btn-lg">Resetar</button>
+                <button id="detalhe" class="btn btn-primary btn-lg">Detalhe</button>
             </div>
         </div>
     </div>
@@ -122,12 +140,15 @@
 <script>
 
     $(document).ready(() => {
-        $(".btn-primary").attr('disabled', 'disabled');
+        $("input.btn-primary").attr('disabled', 'disabled');
         $("#Programs").attr('disabled', 'disabled')
         $("#Tempo").attr('disabled', 'disabled')
         $("#Potencia").attr('disabled','disabled')
         $(".contador").typeTo("Insira um Produto para começarmos");
+
     })
+
+   
     $('#salvar').on('click', event => {
         event.preventDefault();
         let enviar = true
@@ -177,6 +198,7 @@
                 $("input").removeAttr('disabled');
                 $("select").removeAttr('disabled');
                 $(".btn-primary").removeAttr('disabled');
+                $("#origem").html('');
             })
         }
     })
@@ -222,8 +244,14 @@
 
     $('#rapido').on('click', event => {
         event.preventDefault();
-        $.post('/Microndas/InicioRapido', { "iniciar": "ok" }, data => {
-            console.log(data);
+        $('#mostrar-detalhes li').remove();
+        $('#contador-list li').remove();
+        $.post('/Microndas/InicioRapido', {}, data => {
+            let stringacozinhar = $(".contador").text()
+            segundos = data.Objeto.Tempo
+            metade = segundos / 2
+            stringCount = cozinharString(data.Objeto.Potencia, data.Objeto.CozimentoString)
+            contagem_tempo(stringCount, stringacozinhar, metade)
         })
     })
 
@@ -236,30 +264,91 @@
     })
 
 
-    $('#assar').on('click', () => {
+    $('#assar').on('click', event => {
+        event.preventDefault();
         let Programa = $('#Programs').val();
-        $('#contador-list li').remove();
-        $.post("/Microndas/Programa", { "Programa": Programa }, (data) => {
-            segundos = data.ObjPrograma.Tempo
-            metade = segundos / 2
-            stringCount = cozinharString(data.ObjPrograma.Potencia, data.ObjPrograma.CozimentoString)
-            let stringacozinhar = $(".contador").text()
-            contagem_tempo(stringCount, stringacozinhar,metade)
-        });
+        let stringacozinhar = $(".contador").text()
+        let segundosParados = $('#segundosParados').text() != "" ? parseInt($('#segundosParados').text()) : 0
 
+        $('#mostrar-detalhes li').remove();
+        $('#contador-list li').remove();
+      
+        if (segundosParados != 0){
+            $('#opcoes').show();
+        }else {
+            assar(Programa,stringacozinhar);
+        }
        
     })
+
+    $('#detalhe').on('click', event => {
+        event.preventDefault();
+        let programa = $('#Programs').val();
+        $('#mostrar-detalhes li').remove();
+
+        if (programa != "") {
+            $.post('/Microndas/Detalhe', { "Programa": programa }, data => {
+                let obj = data.objeto
+                $('#mostrar-detalhes').append(`<li class='color-red'>Nome: ${obj.Nome} </li>`);
+                $('#mostrar-detalhes').append(`<li class='color-red'>Potencia: ${obj.Potencia}</li>`);
+                $('#mostrar-detalhes').append(`<li class='color-red'>Tempo: ${obj.Tempo}</li>`);
+                $('#mostrar-detalhes').append(`<li class='color-red'>Instruções: ${obj.Instrucoes}</li>`);
+                $('#mostrar-detalhes').append(`<li class='color-red'>StringCozimento: ${obj.CozimentoString}</li>`);
+
+            })
+        } else {
+            alert('Programa não selecionado')
+        }
+    })
+
+
+    $('input[type="file"]').on('change', event => {
+        let form = new FormData();
+        form.append('arquivo', event.target.files[0]);
+
+        $.ajax({
+            url: '/Microndas/Upload',
+            data: form,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: data => {
+                if (data.ok == false) {
+                    alert(data.aviso)
+                } else {
+                    $('.contador .contador-list').html('');
+                    $(".contador").typeTo(data.stringLida);
+                    $("input").removeAttr('disabled');
+                    $("select").removeAttr('disabled');
+                    $(".btn-primary").removeAttr('disabled');
+                    $("#origem").append(data.caminho);
+                }
+            }
+        })
+    })
+
 
     var segundos;
     var stringCount;
     var bindColor;
     var metade;
+    var segundosParados;
+
+    $(document).keypress(function (event) {
+        if (String.fromCharCode(event.which) == "p") {
+            segundos = 0
+        } else if (String.fromCharCode(event.which) == "r") {
+            segundosParados ^= segundos;
+            $('#segundosParados').append(segundosParados);
+            segundos = 0;
+        }
+    });
     function contagem_tempo(stringCount, stringacozinhar,metade) {
-      
+
+
+
         segundos = segundos - 1;
-        
-        console.log(metade);
-        console.log(segundos)
+         
         if (segundos == -1) {
             segundos = 0;
 
@@ -271,8 +360,10 @@
             timerID = setTimeout("contagem_tempo('" + stringCount + "','" + stringacozinhar + "','" + metade +"')", 1000);
         } else {
             $('#contador-list').append("<li class='color-red'>aquecida.</li>");
+            segundosParados = 0
         }
     }
+
 
     function cozinharString(potencia, cozimentoString) {
         var stringCozinhada = ""
@@ -282,5 +373,35 @@
         }
 
         return stringCozinhada
+    }
+
+
+    function verificarParado(element) {
+        console.log($(element));
+
+        let flag = $(element).data('value')
+        let segundosParados = $('#segundosParados').text() != "" ? parseInt($('#segundosParados').text()) : 0
+        let Programa = $('#Programs').val();
+        let stringacozinhar = $(".contador").text()
+
+        if (flag == 'Sim') {
+            assar(Programa, stringacozinhar, segundosParados)
+        } else {
+            assar(Programa, stringacozinhar)
+
+        }
+    }
+
+    function assar(Programa, stringacozinhar, segundosParados) {
+        $.post("/Microndas/Programa", { "Programa": Programa, "String": stringacozinhar }, data => {
+            if (data.ok == true) {
+                segundos = typeof segundosParados == 'undefined' ? data.ObjPrograma.Tempo : segundosParados
+                metade = segundos / 2
+                stringCount = cozinharString(data.ObjPrograma.Potencia, data.ObjPrograma.CozimentoString)
+                contagem_tempo(stringCount, stringacozinhar, metade)
+            } else {
+                $('#contador-list').append("<li class='color-red'>Programa não é compativel com o produto</li>");
+            }
+        });
     }
 </script>
