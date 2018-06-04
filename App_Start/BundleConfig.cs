@@ -22,7 +22,9 @@ namespace WebApplication1dsadasd
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/Typer.js",
-                      "~/Scripts/jquery.MultiFile.js"));
+                      "~/Scripts/jquery.MultiFile.js",
+                      "~/Scripts/swal.js"
+                      ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

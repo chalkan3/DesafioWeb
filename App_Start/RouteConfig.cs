@@ -16,7 +16,19 @@ namespace WebApplication1dsadasd
             routes.MapRoute(
                 "UploadArquivo",
                 "Microndas/Upload",
-                new { Controller = "Upload", Action= "FileUpload" }
+                new { Controller = "Upload", Action= "ActionFileUpload" }
+                );
+
+            routes.MapRoute(
+                "AtualizarArquivo",
+                "Microndas/Atualizar",
+                new { Controller= "Upload", Action= "ActionAtualizarArquivo" }
+                );
+
+            routes.MapRoute(
+                "DowloadArquivo",
+                "Microndas/Download",
+                new { Controller = "Upload" , Action= "ActionFileDownload" }
                 );
             routes.MapRoute(
                 "PegarPrograma",

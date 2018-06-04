@@ -22,14 +22,14 @@ namespace WebApplication1dsadasd.Models
             existeArquivo = false;
         }
 
+       
 
         private Stream AbrirArquivo(string caminho)
         {
             Stream arquivo = null;
             try
             {
-                arquivo = File.Open(caminho, FileMode.Open, FileAccess.ReadWrite);
-
+                    arquivo = File.Open(caminho, FileMode.Open, FileAccess.ReadWrite);
             }
             catch (IOException)
             {
@@ -41,6 +41,16 @@ namespace WebApplication1dsadasd.Models
             return arquivo;
 
 
+        }
+
+        public StreamWriter EscreverArquivo(string caminho)
+        {
+
+            StreamWriter escritor = new StreamWriter(caminho, true);
+
+            return escritor;
+
+        
         }
 
         public string[] LerArquivo(string caminho)

@@ -10,8 +10,8 @@ namespace WebApplication1dsadasd.Controllers
 {
     public class UploadController : Controller
     {
-        // GET: Upload
-        public ActionResult FileUpload(HttpPostedFileBase arquivo)
+        // GET: Upload não é o meio mais seguro passando o path do servidor porem usei deste jeito nesse exercicio.
+        public ActionResult ActionFileUpload(HttpPostedFileBase arquivo)
         {
 
             if(arquivo != null && arquivo.ContentLength > 0)
@@ -37,5 +37,35 @@ namespace WebApplication1dsadasd.Controllers
             return Json(new { ok = false , aviso = "arquivo não encontrado"});
             
         }
+
+        [HttpPost]
+        public ActionResult ActionAtualizarArquivo(FormCollection formulario)
+        {
+            Arquivo arquivo = new Arquivo();
+            StreamWriter escritor = arquivo.EscreverArquivo(formulario["path"]);
+
+            if(escritor == null)
+            {
+                return Json(new { ok = false, aviso = "Arquivo não encontrado" });
+            }
+            escritor.WriteLine(formulario["conteudo"]);
+            escritor.Close();
+            return Json(new { ok = true });
+        }
+        [HttpGet]
+        public ActionResult ActionFileDownload(string filePath, string mode)
+        {
+            if (!System.IO.File.Exists(filePath))
+            {
+                return HttpNotFound();
+            }
+            if (mode == "action")
+                return Json(new { fileName = filePath }, JsonRequestBehavior.AllowGet);
+
+            return File(filePath, System.Net.Mime.MediaTypeNames.Application.Octet, "arquivoAquecido.txt");
+
+        }
+
+       
     }
 }

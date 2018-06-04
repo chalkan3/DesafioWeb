@@ -24,6 +24,10 @@
             <ul id="mostrar-detalhes" />
             <p class="contador">Bem Vindo!</p>
             <ul id="contador-list" />
+            <div id="botoesParar" style="display:none;">
+                <button data-value="Sim" class="btn btn-danger" onclick="PararCronometro();">Parar</button>
+                <button data-value="Nao" class="btn btn-warning" onclick="CancelarCronometro();">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -46,6 +50,9 @@
                         <input id="arquivo " type="file" name="file"  class="upload form-control" accept=".txt" />
                         
                     </div>
+                    <button class="btn btn-success" id="btn-Dowload" style="margin-top:10px;">
+                        Dowload do arquivo Assado
+                    </button>
 
                 </div>
                 <div class="col-md-4">
@@ -135,6 +142,7 @@
         </div>
     </div>
 </div>
+<iframe id="download-archive" style="display:none"></iframe>
 
 
 <script>
@@ -143,34 +151,69 @@
         $("input.btn-primary").attr('disabled', 'disabled');
         $("#Programs").attr('disabled', 'disabled')
         $("#Tempo").attr('disabled', 'disabled')
-        $("#Potencia").attr('disabled','disabled')
-        $(".contador").typeTo("Insira um Produto para começarmos");
+        $("#Potencia").attr('disabled', 'disabled')
+        $("#btn-Dowload").attr('disabled', 'disabled')
 
+        $(".contador").typeTo("Insira um Produto para começarmos");
+      
     })
 
-   
+    $('#btn-Dowload').on('click', event => {
+        event.preventDefault();
+
+        let path = $('#origem').text();
+        $.ajax({
+            url: '/Microndas/Download',
+            data: { "filePath": path, "mode": "action" },
+            method: 'GET',
+            success: data => {
+                $('#download-archive').attr('src', '/Microndas/Download?filePath=' + data.fileName + '&mode=dowload');
+            }
+        })
+      
+    })
     $('#salvar').on('click', event => {
         event.preventDefault();
         let enviar = true
 
         if ($('#NovoPotencia').val() == "") {
-            alert('Potencia não pode ficar vazio');
+            swal(
+                'Ops...',
+                'Potencia não pode ficar vazio',
+                'error'
+            )
             enviar = false
         }
         if ($('#Nome').val() == "") {
-            alert('Nome não pode ficar vazio');
+            swal(
+                'Ops...',
+                'Nome não pode ficar vazio',
+                'error'
+            )
             enviar = false
         }
         if ($('#NovoTempo').val() == "") {
-            alert('Tempo não pode ficar vazio');
+            swal(
+                'Ops...',
+                'Tempo não pode ficar vazio',
+                'error'
+            )
             enviar = false
         }
         if ($('#cozimentoString').val() == "") {
-            alert('String não pode ficar vazio');
+            swal(
+                'Ops...',
+                'String não pode ficar vazio',
+                'error'
+            )
             enviar = false
         }
         if ($('#Instrucoes').val() == "") {
-            alert('Instrucoes não pode ficar vazio');
+            swal(
+                'Ops...',
+                'Instrucoes não pode ficar vazio',
+                'error'
+            )
             enviar = false
         }
 
@@ -180,7 +223,11 @@
                 if (data.ok == true) {
                     location.reload();
                 } else {
-                    alert('Aconteceu algum coisa não esperada.')
+                    swal(
+                        'Ops...',
+                        data.msg,
+                        'error'
+                    )
                 }
             })   
         }
@@ -188,9 +235,17 @@
     })
     $("#produto").on('click', event => {
         event.preventDefault();
+        $("#btn-Dowload").attr('disabled', 'disabled')
+        $('#origem').html('');
+
+
         const NomeProduto = $('[name="NomeProduto"]').val()
         if (NomeProduto == "") {
-            alert('Produto não pode ficar vazio.');
+            swal(
+                'Ops...',
+                'Produto não pode ficar vazio.',
+                'error'
+            )
         } else {
             $.post('/Microndas/StringCozida', { "Produto": NomeProduto }, data => {
                 $('.contador .contador-list').html('');
@@ -207,14 +262,27 @@
         event.preventDefault();
         const Tempo = $('[name="Tempo"]').val();
         if (Tempo == "") {
-            alert('Tempo não pode ficar vazio.')
+            swal(
+                'Ops...',
+                'Tempo não pode ficar vazio.',
+                'error'
+            )
         } else {
             $.post('/Microndas/Tempo', { "Tempo": Tempo }, data => {
                 if (data.ok == true) {
-                    alert('Tempo alterado com sucesso.');
+                    swal(
+                        'Ops...',
+                        'Tempo alterado com sucesso.',
+                        'success'
+                    )
                     $('#Tempo').val('');
                 } else {
-                    alert('Tempo não pode ser alterado');
+                    swal(
+                        'Ops...',
+                        data.msg,
+                        'error'
+                    )
+                   
                 }
             })
         }
@@ -227,15 +295,27 @@
         const potencia = $('[name="Potencia"]').val();
 
         if (potencia == "") {
-            alert('Potencia não pode ficar vazio');
+            swal(
+                'Ops...',
+                'Potencia não pode ficar vazio',
+                'error'
+            )
 
         } else {
             $.post('/Microndas/Potencia', { "Potencia": potencia }, data => {
                 if (data.ok == true) {
-                    alert('Potencia alterado com sucesso.');
+                    swal(
+                        'Ops...',
+                        'Potencia alterado com sucesso.',
+                        'success'
+                    )
                     $('#Potencia').val('');
                 } else {
-                    alert('Potencia não pode ser alterado');
+                    swal(
+                        'Ops...',
+                        data.msg,
+                        'error'
+                    )
                 }
             })
         }
@@ -259,7 +339,7 @@
     $('#novo').on('click', event => {
         event.preventDefault();
         $.post('/Microndas/Novo', {}, data => {
-            console.log(data);
+            
         })
     })
 
@@ -297,13 +377,19 @@
 
             })
         } else {
-            alert('Programa não selecionado')
+            swal(
+                'Ops...',
+                'Programa não selecionado',
+                'error'
+            )
         }
     })
 
-
+  
     $('input[type="file"]').on('change', event => {
         let form = new FormData();
+        $('#btn-Dowload').attr('disabled', 'disabled');
+        $('#origem').html('');
         form.append('arquivo', event.target.files[0]);
 
         $.ajax({
@@ -328,25 +414,29 @@
     })
 
 
+    
+    function PararCronometro() {
+        segundosParados ^= segundos;
+        segundos = 0
+        $('#segundosParados').append(segundosParados);
+
+    }
+
+    function CancelarCronometro() {
+        segundos = 0
+    }
+
+
     var segundos;
     var stringCount;
     var bindColor;
     var metade;
     var segundosParados;
+    var parar;
 
-    $(document).keypress(function (event) {
-        if (String.fromCharCode(event.which) == "p") {
-            segundos = 0
-        } else if (String.fromCharCode(event.which) == "r") {
-            segundosParados ^= segundos;
-            $('#segundosParados').append(segundosParados);
-            segundos = 0;
-        }
-    });
-    function contagem_tempo(stringCount, stringacozinhar,metade) {
-
-
-
+ 
+    function contagem_tempo(stringCount, stringacozinhar, metade) {
+        $('#botoesParar').show();
         segundos = segundos - 1;
          
         if (segundos == -1) {
@@ -355,12 +445,42 @@
         }
         bindColor = segundos < metade ? 'color-yellow' : ''
         $('#contador-list').append("<li class='" + bindColor + "'>" + stringacozinhar + stringCount + "</li>");
-
+        let path = $('#origem').text();
+        if (path != "") {
+            $.post('/Microndas/Atualizar', { "path": path, "conteudo": stringacozinhar + stringCount }, data => {
+                if (data.ok != true) {
+                    swal(
+                        'Ops...',
+                        data.aviso,
+                        'warning'
+                    )
+                }
+            })
+        }
         if (segundos != 0) {
             timerID = setTimeout("contagem_tempo('" + stringCount + "','" + stringacozinhar + "','" + metade +"')", 1000);
-        } else {
+        }else {
             $('#contador-list').append("<li class='color-red'>aquecida.</li>");
-            segundosParados = 0
+            if (path != "") {
+                $.post('/Microndas/Atualizar', { "path": path, "conteudo": "aquecida" }, data => {
+                    if (data.ok != true) {
+                        swal(
+                            'Ops...',
+                            data.aviso,
+                            'warning'
+                        )
+                    } else {
+                        $("#btn-Dowload").removeAttr('disabled');
+
+                    }
+                })
+            }
+            swal(
+                'Aquecida',
+                'String ' + stringacozinhar + " Foi aquecida",
+                'success'
+            )
+            $('#botoesParar').hide();
         }
     }
 
@@ -377,7 +497,6 @@
 
 
     function verificarParado(element) {
-        console.log($(element));
 
         let flag = $(element).data('value')
         let segundosParados = $('#segundosParados').text() != "" ? parseInt($('#segundosParados').text()) : 0
@@ -385,8 +504,13 @@
         let stringacozinhar = $(".contador").text()
 
         if (flag == 'Sim') {
+            $('#opcoes').hide();
+            $('#segundosParados').html('');
             assar(Programa, stringacozinhar, segundosParados)
         } else {
+            $('#opcoes').hide();
+            $('#segundosParados').html('');
+
             assar(Programa, stringacozinhar)
 
         }

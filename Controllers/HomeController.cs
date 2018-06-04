@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication1dsadasd.Models;
+using WebApplication1dsadasd.Utils;
 using WebApplication1dsadasd.ViewModels;
 
 namespace WebApplication1dsadasd.Controllers
@@ -51,15 +52,21 @@ namespace WebApplication1dsadasd.Controllers
 
             if (int.TryParse(formulario["Tempo"], out tempo))
             {
-                Funcionalidades Padrao = Funcionalidades.Padrao(bancoDeDados);
-                bancoDeDados = Padrao.CalcularTempo(tempo, bancoDeDados);
+                try
+                {
+                    Funcionalidades Padrao = Funcionalidades.Padrao(bancoDeDados);
+                    bancoDeDados = Padrao.CalcularTempo(tempo, bancoDeDados);
 
 
-                Session["bancoDeDados"] = bancoDeDados;
+                    Session["bancoDeDados"] = bancoDeDados;
+                }catch(MicrondasException e)
+                {
+                    return Json(new { ok = false, msg = e.Message });
+                }
             }
             else
             {
-                return Json(new { ok = false });
+                return Json(new { ok = false, msg="Tempo é uma string" });
 
             }
 
@@ -83,14 +90,20 @@ namespace WebApplication1dsadasd.Controllers
             var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
             if (int.TryParse(formulario["Potencia"], out potencia))
             {
-                Funcionalidades Padrao = Funcionalidades.Padrao(bancoDeDados);
-                bancoDeDados = Padrao.CalcularPotencia(potencia,bancoDeDados);
-                Session["bancoDeDados"] = bancoDeDados;
+                try
+                {
+                    Funcionalidades Padrao = Funcionalidades.Padrao(bancoDeDados);
+                    bancoDeDados = Padrao.CalcularPotencia(potencia, bancoDeDados);
+                    Session["bancoDeDados"] = bancoDeDados;
+                }catch(MicrondasException e)
+                {
+                    return Json(new { ok = false, msg = e.Message });
+                }
 
             }
             else
             {
-                return Json(new { ok = false });
+                return Json(new { ok = false, msg = "O valor é uma string." });
 
             }
 
@@ -118,17 +131,27 @@ namespace WebApplication1dsadasd.Controllers
 
             if (GravarOK == true)
             {
-                Funcionalidades novaFuncionalidade = new Funcionalidades(Tempo, Potencia, forumulario["Instrucoes"], forumulario["Nome"], forumulario["cozimentoString"]);
-                var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
+                try
+                {
+                    Funcionalidades novaFuncionalidade = new Funcionalidades(Tempo, Potencia, forumulario["Instrucoes"], forumulario["Nome"], forumulario["cozimentoString"]);
+                     
+                    var bancoDeDados = (List<Funcionalidades>)Session["bancoDeDados"];
+                    bancoDeDados = Funcionalidades.NovoItem(bancoDeDados, novaFuncionalidade);
+                    Session["bancoDeDados"] = bancoDeDados;
 
-                bancoDeDados = Funcionalidades.NovoItem(bancoDeDados, novaFuncionalidade);
-                Session["bancoDeDados"] = bancoDeDados;
+                    return Json(new { ok = true });
 
-                return Json(new { ok = true });
+                }
+                catch (MicrondasException e)
+                {
+                    return Json(new { ok = false , msg = e.Message });
+
+                }
+
             }
             else
             {
-                return Json(new { ok = false });
+                return Json(new { ok = false, msg = "Algo aconteceu inesperado por favor entre em contato com o administrador" });
             }
 
         }
