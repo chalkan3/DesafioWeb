@@ -9,7 +9,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   testevar: 'restore'
-  golang: 'oi eu sou igordsr'
+  golang: 'oi eu sou igordsre'
 #comentarios
 steps:
 # - script: dotnet $(testevar)
