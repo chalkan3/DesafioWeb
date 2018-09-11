@@ -8,8 +8,9 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-
+  testevar: 'restore'
+#comentarios
 steps:
-- script: dotnet restore
+- script: dotnet $(testevar)
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
